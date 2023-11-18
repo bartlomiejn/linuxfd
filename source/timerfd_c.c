@@ -44,6 +44,46 @@ static PyObject * _timerfd_create(PyObject *self, PyObject *args) {
 	return PyLong_FromLong(result);
 };
 
+/* Python: timerfd_settime_ns(fd,flags,value,interval) -> value,interval
+   C:      int timerfd_settime_ns(int fd, int flags,
+                                  const struct itimerspec *new_value,
+                                  struct itimerspec *old_value); */
+static PyObject * _timerfd_settime_ns(PyObject *self, PyObject *args) {
+	/* variable declarations */
+	int fd;
+	int flags;
+	int result;
+	double value;
+	double interval;
+	struct itimerspec old_value;
+	struct itimerspec new_value;
+	PyObject *resulttuple;
+	
+	/* parse the function's arguments: int fd, int flags, double value, double interval */
+	if (!PyArg_ParseTuple(args, "iidd", &fd, &flags, &value, &interval)) return NULL;
+	
+	/* prepare struct itimerspec */
+	new_value.it_value.tv_sec  = (time_t)0;
+	new_value.it_value.tv_nsec = (long int)value;
+	
+	new_value.it_interval.tv_sec  = (time_t)0;
+	new_value.it_interval.tv_nsec = (long int)interval;
+	
+	/* call timerfd_settime(); catch errors by raising an exception */
+	Py_BEGIN_ALLOW_THREADS
+	result = timerfd_settime(fd, flags, &new_value, &old_value);
+	Py_END_ALLOW_THREADS
+	if (result == -1) return PyErr_SetFromErrno(PyExc_OSError);
+	
+	/* convert returned struct old_value */
+	value    = (double)old_value.it_value.tv_sec    + (double)old_value.it_value.tv_nsec / 1e9;
+	interval = (double)old_value.it_interval.tv_sec + (double)old_value.it_interval.tv_nsec / 1e9;
+	resulttuple = Py_BuildValue("(dd)", value, interval);
+	
+	/* everything's fine, return tuple (value,interval) created from old_value */
+	return resulttuple;
+};
+
 /* Python: timerfd_settime(fd,flags,value,interval) -> value,interval
    C:      int timerfd_settime(int fd, int flags,
                                const struct itimerspec *new_value,
@@ -145,11 +185,12 @@ static PyObject * _timerfd_read(PyObject *self, PyObject *args) {
 
 
 static PyMethodDef methods[] = {
-	{ "timerfd_create",  _timerfd_create,  METH_VARARGS, NULL },
-	{ "timerfd_settime", _timerfd_settime, METH_VARARGS, NULL },
-	{ "timerfd_gettime", _timerfd_gettime, METH_VARARGS, NULL },
-	{ "timerfd_read",    _timerfd_read,    METH_VARARGS, NULL },
-    { NULL,              NULL,     0,            NULL }
+	{ "timerfd_create",     _timerfd_create,        METH_VARARGS, NULL },
+	{ "timerfd_settime",    _timerfd_settime,       METH_VARARGS, NULL },
+    { "timerfd_settime_ns", _timerfd_settime_ns,    METH_VARARGS, NULL },
+	{ "timerfd_gettime",    _timerfd_gettime,       METH_VARARGS, NULL },
+	{ "timerfd_read",       _timerfd_read,          METH_VARARGS, NULL },
+    { NULL,                 NULL,                   0,            NULL }
 };
 
 #if PY_MAJOR_VERSION >= 3

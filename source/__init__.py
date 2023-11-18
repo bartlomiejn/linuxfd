@@ -457,7 +457,23 @@ Raises:
 		else:
 			flags = 0
 		return timerfd_c.timerfd_settime(self._fd,flags,value,interval)
-	
+
+	def settime_ns(self,value=0,interval=0):
+		"""Start or stop the timer using nanosecond values/intervals.
+
+Args:
+   value: an int >=0 defining the initial expiration time in nanoseconds;
+          if zero (default), the timer is disabled.
+   interval: an int >= 0 defining the period in nanoseconds of a periodically
+             expiring timer; if zero (default), the timer will only expire once.
+
+Returns:
+   A 2-tuple (value,interval) of floats; the old timer setting.
+
+Raises:
+   OSError.EINVAL: invalid timer values specified.
+   OSError.EBADF: timerfd file descriptor already closed."""
+		return timerfd_c.timerfd_settime_ns(self._fd,0,value,interval)
 	
 	def read(self):
 		"""Read the timer file and return an integer denoting the number of
