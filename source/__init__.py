@@ -356,7 +356,7 @@ A timer file descriptor is created, which represents a timer and becomes
 readable if this timer expires. Reading this file returns the number of
 expirations that have occurred since the last read operation."""
 	
-	def __init__(self,rtc=False,nonBlocking=False,closeOnExec=False):
+	def __init__(self,rtc=False,mon_raw=False,nonBlocking=False,closeOnExec=False):
 		"""Constructor: Initialise a timer file descriptor. The descriptor itself can be
 retrieved via the fileno() method.
 
@@ -388,6 +388,9 @@ Raises:
 			clockid = timerfd_c.CLOCK_REALTIME
 		else:
 			clockid = timerfd_c.CLOCK_MONOTONIC
+
+        if bool(mon_raw):
+            clockid = timerfd_c.CLOCK_MONOTONIC_RAW
 		flags = 0
 		if self._isNonBlocking: flags |= timerfd_c.TFD_NONBLOCK
 		if self._isCloseOnExec: flags |= timerfd_c.TFD_CLOEXEC

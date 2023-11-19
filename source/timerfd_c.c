@@ -214,6 +214,7 @@ void inittimerfd_c(void) {
 		/* define timerfd constants */
 		PyModule_AddIntConstant( m, "CLOCK_REALTIME",    CLOCK_REALTIME );
 		PyModule_AddIntConstant( m, "CLOCK_MONOTONIC",   CLOCK_MONOTONIC );
+        PyModule_AddIntConstant( m, "CLOCK_MONOTONIC_RAW", CLOCK_MONOTONIC_RAW );
 		PyModule_AddIntConstant( m, "TFD_CLOEXEC",       TFD_CLOEXEC );
 		PyModule_AddIntConstant( m, "TFD_NONBLOCK",      TFD_NONBLOCK );
 		PyModule_AddIntConstant( m, "TFD_TIMER_ABSTIME", TFD_TIMER_ABSTIME );
