@@ -62,7 +62,7 @@ static PyObject * _timerfd_settime_ns(PyObject *self, PyObject *args) {
 	PyObject *resulttuple;
 	
 	/* parse the function's arguments: int fd, int flags, int value, int interval */
-	if (!PyArg_ParseTuple(args, "iidd", &fd, &flags, &value, &interval)) return NULL;
+	if (!PyArg_ParseTuple(args, "iill", &fd, &flags, &value, &interval)) return NULL;
 	
 	/* prepare struct itimerspec */
 	new_value.it_value.tv_sec  = (time_t)0;
