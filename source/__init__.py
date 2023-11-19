@@ -388,9 +388,8 @@ Raises:
 			clockid = timerfd_c.CLOCK_REALTIME
 		else:
 			clockid = timerfd_c.CLOCK_MONOTONIC
-
-        if bool(mon_raw):
-            clockid = timerfd_c.CLOCK_MONOTONIC_RAW
+		if bool(mon_raw):
+			clockid = timerfd_c.CLOCK_MONOTONIC_RAW
 		flags = 0
 		if self._isNonBlocking: flags |= timerfd_c.TFD_NONBLOCK
 		if self._isCloseOnExec: flags |= timerfd_c.TFD_CLOEXEC
